@@ -35,7 +35,7 @@ actor Token {
             case null 0;
         }
     };
-
+    // Test Update
     // Retrieving the total supply of tokens (sum of all balances)
     public query func totalSupply() : async Nat {
         var total : Nat = 0;
