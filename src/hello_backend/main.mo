@@ -80,7 +80,7 @@ actor Token {
 
         let balance = await getBalance(principal);
         ledger.put(principal, Nat.add(balance, amount));
-        return "Minted " # Nat.toText(amount) # " tokens to " # Principal.toText(principal);
+        return "Minted " # Nat.toText(amount) # " tokens to " # account;
     };
 
 };
