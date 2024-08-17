@@ -57,12 +57,34 @@ actor Token {
         ledger.put(fromPrincipal, Nat.sub(fromBalance, amount));
         let toBalance = await getBalance(toPrincipal);
         ledger.put(toPrincipal, Nat.add(toBalance, amount));
-        
+
         return "Transferred " # Nat.toText(amount) # " tokens from " # from # " to " # to;
     };
 
     public query func getBalance(account : Principal) : async Nat {
         switch (ledger.get(account)) {
+            case (?balance) balance;
+            case null 0;
+        }
+    };
+
+    public query func getBalanceByName(account : Text) :  async Nat {
+        let entries = _ledgerName.entries();
+        var address: Text = "";
+        
+        for (entry in entries) {
+            switch (entry) {
+                case (key, value) {
+                    if (value == account){
+                        address := Principal.toText(key);
+                    };
+                };
+            };
+        };
+        
+        let principalAddress = Principal.fromText(address);
+
+        switch (ledger.get(principalAddress)) {
             case (?balance) balance;
             case null 0;
         }
