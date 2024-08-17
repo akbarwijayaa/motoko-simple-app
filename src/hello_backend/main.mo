@@ -74,4 +74,13 @@ actor Token {
         return address;
     };
 
+    public func mintByName(account : Text, amount : Nat) : async Text {
+        let address: Text = await getAddressByName(account);
+        let principal = Principal.fromText(address);
+
+        let balance = await getBalance(principal);
+        ledger.put(principal, Nat.add(balance, amount));
+        return "Minted " # Nat.toText(amount) # " tokens to " # Principal.toText(principal);
+    };
+
 };
