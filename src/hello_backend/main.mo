@@ -42,6 +42,25 @@ actor Token {
         return "Transferred " # Nat.toText(amount) # " tokens from " # Principal.toText(from) # " to " # Principal.toText(to);
     };
 
+    public func transferByName(from : Text, to : Text, amount : Nat) : async Text {
+        let fromAddress: Text = await getAddressByName(from);
+        let toAddress: Text = await getAddressByName(to);
+
+        let fromPrincipal = Principal.fromText(fromAddress);
+        let toPrincipal = Principal.fromText(toAddress);
+
+        let fromBalance = await getBalance(fromPrincipal);
+        if (fromBalance < amount) {
+            return "Insufficient balance";
+        };
+
+        ledger.put(fromPrincipal, Nat.sub(fromBalance, amount));
+        let toBalance = await getBalance(toPrincipal);
+        ledger.put(toPrincipal, Nat.add(toBalance, amount));
+        
+        return "Transferred " # Nat.toText(amount) # " tokens from " # from # " to " # to;
+    };
+
     public query func getBalance(account : Principal) : async Nat {
         switch (ledger.get(account)) {
             case (?balance) balance;
