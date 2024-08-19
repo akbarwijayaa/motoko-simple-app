@@ -2,7 +2,6 @@ import Nat "mo:base/Nat";
 import Principal "mo:base/Principal";
 import Text "mo:base/Text";
 import Map "mo:base/HashMap";
-import Array "mo:base/Array";
 
 actor Token {
     var ledger : Map.HashMap<Principal, Nat> = Map.HashMap<Principal, Nat>(10, Principal.equal, Principal.hash);
@@ -29,6 +28,15 @@ actor Token {
         let balance = await getBalance(to);
         ledger.put(to, Nat.add(balance, amount));
         return "Minted " # Nat.toText(amount) # " tokens to " # Principal.toText(to);
+    };
+
+    public func mintByName(account : Text, amount : Nat) : async Text {
+        let address: Text = await getAddressByName(account);
+        let principal = Principal.fromText(address);
+
+        let balance = await getBalance(principal);
+        ledger.put(principal, Nat.add(balance, amount));
+        return "Minted " # Nat.toText(amount) # " tokens to " # account;
     };
 
     public func transfer(from : Principal, to : Principal, amount : Nat) : async Text {
@@ -115,13 +123,6 @@ actor Token {
         return address;
     };
 
-    public func mintByName(account : Text, amount : Nat) : async Text {
-        let address: Text = await getAddressByName(account);
-        let principal = Principal.fromText(address);
-
-        let balance = await getBalance(principal);
-        ledger.put(principal, Nat.add(balance, amount));
-        return "Minted " # Nat.toText(amount) # " tokens to " # account;
-    };
+    
 
 };
