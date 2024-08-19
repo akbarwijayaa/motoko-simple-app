@@ -24,6 +24,16 @@ actor Token {
         
     };
 
+    public func deleteName(account : Principal) : async Text {
+        let name = await getName(account);
+        if (name != "Empty name"){
+            _ledgerName.delete(account);
+            return "Deleted name " # name # " from " # Principal.toText(account);
+        };
+        return "Nothing to do with " # name
+        
+    };
+
     public func mint(to : Principal, amount : Nat) : async Text {
         let balance = await getBalance(to);
         ledger.put(to, Nat.add(balance, amount));
