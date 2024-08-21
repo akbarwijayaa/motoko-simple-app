@@ -1,13 +1,15 @@
 import { useState } from 'react';
 import { hello_backend } from 'declarations/hello_backend';
+import { Principal } from '@dfinity/principal';
 
 function App() {
   const [greeting, setGreeting] = useState('');
 
   function setName(event) {
     event.preventDefault();
-    const address = event.target.elements.address.value;
+    const addressString = event.target.elements.address.value;
     const addressName = event.target.elements.addressName.value;
+    const address = Principal.fromText(addressString);
     hello_backend.setName(address, addressName).then((greeting) => {
       setGreeting(greeting);
     });
@@ -35,7 +37,8 @@ function App() {
   function mintToken(event){
     event.preventDefault();
     const nameAddressMint = event.target.elements.nameAddressMint.value;
-    hello_backend.mintByName(nameAddressMint).then((greeting) => {
+    const amountMint = event.target.elements.amountMint.value;
+    hello_backend.mintByName(nameAddressMint, amountMint).then((greeting) => {
       setGreeting(greeting);
     });
     return false;
@@ -70,6 +73,8 @@ function App() {
       <form action="#" onSubmit={mintToken}>
         <label htmlFor="nameAddressMint">Enter your name: &nbsp;</label>
         <input id="nameAddressMint" alt="Name" type="text" />
+        <label htmlFor="amountMint">Enter amount: &nbsp;</label>
+        <input id="amountMint" alt="Name" type="text" />
         <button type="submit">Click Me!</button>
       </form>
       <section id="greeting">{greeting}</section>
