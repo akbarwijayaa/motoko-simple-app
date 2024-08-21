@@ -1,59 +1,82 @@
-# `hello`
+# Token Actor Documentation
 
-Welcome to your new `hello` project and to the Internet Computer development community. By default, creating a new project adds this README and some template files to your project directory. You can edit these template files to customize your project and to include your own code to speed up the development cycle.
+The `Token` actor is a smart contract that serves as a simple token with capabilities to store token balances, transfer tokens between accounts, and assign names to specific accounts. This implementation uses a HashMap to store the ledger and account names.
 
-To get started, you might want to explore the project directory structure and the default configuration file. Working with this project in your development environment will not affect any production deployment or identity tokens.
+## Variables
 
-To learn more before you start working with `hello`, see the following documentation available online:
+### `ledger: Map.HashMap<Principal, Nat>`
+- **Description:** A map that stores the token balance for each account identified by a `Principal`.
+- **Type:** `Map.HashMap<Principal, Nat>`
+- **Default:** A HashMap with an initial capacity of 10.
 
-- [Quick Start](https://internetcomputer.org/docs/current/developer-docs/setup/deploy-locally)
-- [SDK Developer Tools](https://internetcomputer.org/docs/current/developer-docs/setup/install)
-- [Motoko Programming Language Guide](https://internetcomputer.org/docs/current/motoko/main/motoko)
-- [Motoko Language Quick Reference](https://internetcomputer.org/docs/current/motoko/main/language-manual)
+### `_ledgerName: Map.HashMap<Principal, Text>`
+- **Description:** A map that stores the account name associated with each `Principal`.
+- **Type:** `Map.HashMap<Principal, Text>`
+- **Default:** A HashMap with an initial capacity of 10.
 
-If you want to start working on your project right away, you might want to try the following commands:
+## Functions
 
-```bash
-cd hello/
-dfx help
-dfx canister --help
-```
+### `getName(account : Principal) : async Text`
+- **Description:** Returns the name associated with the given `Principal`.
+- **Parameter:**
+  - `account`: The Principal of the account whose name is to be retrieved.
+- **Return:** The account name as `Text`, or "Empty name" if the name is not found.
 
-## Running the project locally
+### `setName(account : Principal, accountName : Text) : async Text`
+- **Description:** Assigns a name to a specific account. If the account does not already have a name, the new name will be saved.
+- **Parameter:**
+  - `account`: The Principal of the account to be named.
+  - `accountName`: The new name to be assigned to the account.
+- **Return:** A message indicating whether the name was successfully saved or not.
 
-If you want to test your project locally, you can use the following commands:
+### `mint(to : Principal, amount : Nat) : async Text`
+- **Description:** Adds a certain amount of tokens to a specific account.
+- **Parameter:**
+  - `to`: The Principal of the account that will receive the tokens.
+  - `amount`: The number of tokens to be added.
+- **Return:** A message indicating the number of tokens that were minted.
 
-```bash
-# Starts the replica, running in the background
-dfx start --background
+### `mintByName(account : Text, amount : Nat) : async Text`
+- **Description:** Adds a certain amount of tokens to an account based on the account name.
+- **Parameter:**
+  - `account`: The name of the account that will receive the tokens.
+  - `amount`: The number of tokens to be added.
+- **Return:** A message indicating the number of tokens that were minted to the account.
 
-# Deploys your canisters to the replica and generates your candid interface
-dfx deploy
-```
+### `transfer(from : Principal, to : Principal, amount : Nat) : async Text`
+- **Description:** Transfers a certain amount of tokens from one account to another.
+- **Parameter:**
+  - `from`: The Principal of the sender's account.
+  - `to`: The Principal of the recipient's account.
+  - `amount`: The number of tokens to be transferred.
+- **Return:** A message indicating whether the transfer was successful or failed (e.g., due to insufficient balance).
 
-Once the job completes, your application will be available at `http://localhost:4943?canisterId={asset_canister_id}`.
+### `transferByName(from : Text, to : Text, amount : Nat) : async Text`
+- **Description:** Transfers a certain amount of tokens from one account to another based on the account names.
+- **Parameter:**
+  - `from`: The name of the sender's account.
+  - `to`: The name of the recipient's account.
+  - `amount`: The number of tokens to be transferred.
+- **Return:** A message indicating whether the transfer was successful or failed.
 
-If you have made changes to your backend canister, you can generate a new candid interface with
+### `getBalance(account : Principal) : async Nat`
+- **Description:** Retrieves the token balance of a specific account.
+- **Parameter:**
+  - `account`: The Principal of the account whose balance is to be retrieved.
+- **Return:** The token balance as `Nat`.
 
-```bash
-npm run generate
-```
+### `getBalanceByName(account : Text) : async Nat`
+- **Description:** Retrieves the token balance of an account based on the account name.
+- **Parameter:**
+  - `account`: The name of the account whose balance is to be retrieved.
+- **Return:** The token balance as `Nat`.
 
-at any time. This is recommended before starting the frontend development server, and will be run automatically any time you run `dfx deploy`.
+### `totalSupply() : async Nat`
+- **Description:** Calculates the total token supply by summing all balances in the ledger.
+- **Return:** The total token supply as `Nat`.
 
-If you are making frontend changes, you can start a development server with
-
-```bash
-npm start
-```
-
-Which will start a server at `http://localhost:8080`, proxying API requests to the replica at port 4943.
-
-### Note on frontend environment variables
-
-If you are hosting frontend code somewhere without using DFX, you may need to make one of the following adjustments to ensure your project does not fetch the root key in production:
-
-- set`DFX_NETWORK` to `ic` if you are using Webpack
-- use your own preferred method to replace `process.env.DFX_NETWORK` in the autogenerated declarations
-  - Setting `canisters -> {asset_canister_id} -> declarations -> env_override to a string` in `dfx.json` will replace `process.env.DFX_NETWORK` with the string in the autogenerated declarations
-- Write your own `createActor` constructor
+### `getAddressByName(account : Text) : async Text`
+- **Description:** Retrieves the `Principal` (in text form) associated with a specific account name.
+- **Parameter:**
+  - `account`: The name of the account whose `Principal` is to be retrieved.
+- **Return:** The `Principal` in text form as `Text`.
